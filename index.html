@@ -1,67 +1,133 @@
-function renderHotels(){
-hotelsList.innerHTML=hotelsData.map((h,hi)=>`
-<div class="card" style="margin-bottom:10px">
-  <div class="row" style="justify-content:space-between">
-    <b>${h.name}</b>
-    <button class="red" onclick="deleteHotel(${hi})">حذف الفندق</button>
-  </div>
+<!doctype html>
 
-  ${
-    h.floors.length
-    ? h.floors.map((f,fi)=>`
-      <div style="margin-top:12px;padding:10px;border:1px solid #e5e7eb;border-radius:14px">
-        <div class="row" style="justify-content:space-between">
-          <span class="pill low">${f.name}</span>
-          <button class="red" onclick="deleteFloor(${hi},${fi})">حذف الدور / المنطقة</button>
-        </div>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نظام ديار لفحص الفندق</title>
 
-        <div style="margin-top:8px">
-          ${
-            f.rooms.length
-            ? f.rooms.map((r,ri)=>`
-              <span class="pill" style="margin:3px">
-                ${r}
-                <button class="red" style="padding:3px 7px;border-radius:8px" onclick="deleteRoom(${hi},${fi},${ri})">×</button>
-              </span>
-            `).join("")
-            : `<span class="muted">لا توجد غرف/مواقع</span>`
-          }
-        </div>
-      </div>
-    `).join("")
-    : `<div class="muted">لم يتم إضافة أدوار أو مناطق بعد</div>`
-  }
+<style>
+body{font-family:Tahoma;background:#f5f5f5;margin:0}
+.container{max-width:1200px;margin:auto;padding:20px}
+.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:10px}
+button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+.red{background:#dc2626;color:#fff}
+.green{background:#16a34a;color:#fff}
+.blue{background:#2563eb;color:#fff}
+input,select{padding:8px;width:100%;margin:5px 0}
+.pill{display:inline-block;background:#eee;padding:5px 10px;border-radius:20px;margin:3px}
+</style>
+
+</head>
+
+<body>
+<div class="container">
+
+<h2>إعدادات الفنادق</h2>
+
+<div class="card">
+<input id="hotelName" placeholder="اسم الفندق">
+<button class="blue" onclick="addHotel()">إضافة فندق</button>
 </div>
-`).join("");
+
+<div id="hotelsList"></div>
+
+</div>
+
+<script>
+let hotelsData = JSON.parse(localStorage.getItem("hotels")) || []
+
+function save(){
+localStorage.setItem("hotels",JSON.stringify(hotelsData))
 }
 
-function deleteHotel(hotelIndex){
-if(!confirm("هل تريد حذف الفندق كاملًا؟")){
-return;
-}
-hotelsData.splice(hotelIndex,1);
-saveHotels();
-loadAuthHotels();
-loadTicketHotels();
-loadSetupHotels();
-renderAll();
+function addHotel(){
+let name=document.getElementById("hotelName").value
+if(!name)return alert("اكتب اسم الفندق")
+
+hotelsData.push({name,floors:[]})
+save()
+render()
 }
 
-function deleteFloor(hotelIndex,floorIndex){
-if(!confirm("هل تريد حذف الدور / المنطقة؟")){
-return;
-}
-hotelsData[hotelIndex].floors.splice(floorIndex,1);
-saveHotels();
-loadTicketHotels();
-loadSetupHotels();
-renderAll();
+function addFloor(i){
+let name=prompt("اسم الدور")
+if(!name)return
+
+hotelsData[i].floors.push({name,rooms:[]})
+save()
+render()
 }
 
-function deleteRoom(hotelIndex,floorIndex,roomIndex){
-hotelsData[hotelIndex].floors[floorIndex].rooms.splice(roomIndex,1);
-saveHotels();
-loadTicketHotels();
-loadSetupFloors();
-renderAll();
+function addRoom(h,f){
+let name=prompt("اسم الغرفة")
+if(!name)return
+
+hotelsData[h].floors[f].rooms.push(name)
+save()
+render()
 }
+
+function deleteHotel(i){
+if(!confirm("حذف الفندق؟"))return
+hotelsData.splice(i,1)
+save()
+render()
+}
+
+function deleteFloor(h,f){
+if(!confirm("حذف الدور؟"))return
+hotelsData[h].floors.splice(f,1)
+save()
+render()
+}
+
+function deleteRoom(h,f,r){
+hotelsData[h].floors[f].rooms.splice(r,1)
+save()
+render()
+}
+
+function render(){
+let html=""
+
+hotelsData.forEach((h,hi)=>{
+html+=`
+<div class="card">
+<b>${h.name}</b>
+<button class="red" onclick="deleteHotel(${hi})">حذف</button>
+<button onclick="addFloor(${hi})">+ دور</button>
+`
+
+h.floors.forEach((f,fi)=>{
+html+=`
+<div style="margin-top:10px">
+<b>${f.name}</b>
+<button class="red" onclick="deleteFloor(${hi},${fi})">حذف</button>
+<button onclick="addRoom(${hi},${fi})">+ غرفة</button>
+<br>
+`
+
+f.rooms.forEach((r,ri)=>{
+html+=`
+<span class="pill">
+${r}
+<button class="red" onclick="deleteRoom(${hi},${fi},${ri})">x</button>
+</span>
+`
+})
+
+html+=`</div>`
+})
+
+html+=`</div>`
+})
+
+document.getElementById("hotelsList").innerHTML=html
+}
+
+render()
+</script>
+
+</body>
+</html>
