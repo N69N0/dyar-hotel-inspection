@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>نظام ديار لفحص الفندق والسلامة</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --dark:#111827;
+      --muted:#64748b;
+      --line:#e5e7eb;
+      --gold:#d6a94f;
+      --green:#16a34a;
+      --red:#dc2626;
+      --orange:#f59e0b;
+      --blue:#2563eb;
+      --soft:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Tahoma, Arial, sans-serif;
+      background:linear-gradient(180deg,#f8fafc,#eef2f7);
+      color:var(--dark);
+    }
+    .wrap{max-width:1320px;margin:auto;padding:18px}
+    .hero{
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 18px 45px rgba(15,23,42,.18);
+      margin-bottom:18px;
+    }
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.20);
+      color:#fde68a;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:36px}
+    .hero p{margin:0;color:#dbeafe;line-height:1.9}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 12px 35px rgba(15,23,42,.06);
+    }
+    .login{grid-column:span 4}
+    .main{grid-column:span 8}
+    .full{grid-column:1/-1}
+    label{display:block;font-weight:700;margin:10px 0 7px;font-size:13px}
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      font-family:inherit;
+      background:white;
+      color:var(--dark);
+      outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+    button{
+      border:0;
+      border-radius:14px;
+      padding:12px 16px;
+      font-family:inherit;
+      font-weight:800;
+      cursor:pointer;
+      background:#0f172a;
+      color:white;
+    }
+    button.secondary{background:#f1f5f9;color:#0f172a;border:1px solid var(--line)}
+    button.gold{background:var(--gold);color:#111827}
+    button.danger{background:var(--red)}
+    button.green{background:var(--green)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .stat{
+      flex:1;
+      min-width:150px;
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+    .stat b{display:block;font-size:28px;margin-top:6px}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+    .tab{
+      background:white;
+      color:#0f172a;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .tab.active{background:#0f172a;color:white}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:7px 10px;
+      font-weight:800;
+      font-size:12px;
+      border:1px solid var(--line);
+      background:#f8fafc;
+    }
+    .low{background:#ecfdf5;color:#166534;border-color:#bbf7d0}
+    .mid{background:#fffbeb;color:#92400e;border-color:#fde68a}
+    .high{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
+    .urgent{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+    .tablewrap{overflow:auto}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:980px}
+    th{font-size:12px;color:var(--muted);text-align:right;padding:8px}
+    td{background:white;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px;font-size:13px}
+    td:first-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+    td:last-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px}
+    .hidden{display:none!important}
+    .note{
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#9a3412;
+      border-radius:16px;
+      padding:12px;
+      line-height:1.8;
+      font-size:13px;
+    }
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted);font-size:13px}
+    @media(max-width:900px){
+      .login,.main{grid-column:1/-1}
+      h1{font-size:28px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">نسخة تأسيسية جديدة</div>
+      <h1>نظام ديار لفحص الفندق والسلامة</h1>
+      <p>
+        نظام مبدئي لإدارة فحوصات الفنادق والبلاغات، يشمل الغرف، الأدوار، المصاعد،
+        أنظمة الحريق والإنذار، والكاميرات. هذه النسخة تحفظ البيانات داخل المتصفح مؤقتًا
+        إلى أن يتم ربط Firebase لاحقًا.
+      </p>
+    </section>
+
+    <div class="grid">
+      <section class="card login" id="loginCard">
+        <h2 class="section-title">تسجيل الدخول</h2>
+        <p class="muted">تسجيل تجريبي محلي للنسخة الأولى.</p>
+
+        <label>البريد الإلكتروني</label>
+        <input id="email" placeholder="example@email.com" value="cccoccc15@hotmail.com">
+
+        <label>الدور</label>
+        <select id="role">
+          <option value="admin">أدمن رئيسي</option>
+          <option value="manager">مدير</option>
+          <option value="viewer">إداري مشاهدة فقط</option>
+          <option value="supervisor">مشرف</option>
+          <option value="assistant">مساعد مشرف</option>
+          <option value="inspector">مفتش</option>
+        </select>
+
+        <label>الفندق</label>
+        <select id="hotel"></select>
+
+        <div style="height:12px"></div>
+        <button class="gold" onclick="login()">دخول النظام</button>
+      </section>
+
+      <section class="card main hidden" id="dashboard">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <h2 class="section-title">لوحة التحكم</h2>
+            <div class="muted" id="userInfo"></div>
+          </div>
+          <button class="secondary" onclick="logout()">تسجيل الخروج</button>
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <div class="stat">إجمالي البلاغات <b id="totalTickets">0</b></div>
+          <div class="stat">بلاغات عاجلة <b id="urgentTickets">0</b></div>
+          <div class="stat">بلاغات مفتوحة <b id="openTickets">0</b></div>
+          <div class="stat">نسبة الجاهزية <b id="readiness">100%</b></div>
+        </div>
+      </section>
+
+      <section class="card full hidden" id="app">
+        <div class="tabs">
+          <button class="tab active" onclick="setInspectionType('room', this)">فحص الغرف</button>
+          <button class="tab" onclick="setInspectionType('floor', this)">فحص الدور / الممر</button>
+          <button class="tab" onclick="setInspectionType('elevator', this)">فحص المصاعد</button>
+          <button class="tab" onclick="setInspectionType('fire', this)">أنظمة الحريق والإنذار</button>
+          <button class="tab" onclick="setInspectionType('cctv', this)">الكاميرات CCTV</button>
+          <button class="tab" onclick="setInspectionType('admin', this)">لوحة الأدمن</button>
+        </div>
+
+        <div class="grid">
+          <section class="card" style="grid-column:span 4">
+            <h2 class="section-title">إدخال فحص / بلاغ</h2>
+            <div class="note">
+              المفتش يختار العنصر والمشكلة فقط، والنظام يحدد القسم والتخصص والخطورة تلقائيًا.
+            </div>
+
+            <label>نوع الفحص</label>
+            <input id="inspectionTypeLabel" value="فحص الغرف" readonly>
+
+            <label>الموقع</label>
+            <input id="location" placeholder="مثال: غرفة 201 / الدور 2 / مصعد 1">
+
+            <label>العنصر</label>
+            <select id="item"></select>
+
+            <label>المشكلة</label>
+            <select id="problem"></select>
+
+            <label>ملاحظة</label>
+            <textarea id="note" placeholder="اكتب وصف مختصر للمشكلة"></textarea>
+
+            <label>صورة قبل / رابط أو اسم الصورة</label>
+            <input id="photoBefore" placeholder="مثال: IMG_001 أو رابط الصورة">
+
+            <div class="row" style="margin-top:12px">
+              <button class="green" onclick="createTicket()">حفظ البلاغ</button>
+              <button class="secondary" onclick="clearForm()">مسح</button>
+            </div>
+          </section>
+
+          <section class="card" style="grid-column:span 8">
+            <h2 class="section-title">البلاغات</h2>
+            <div class="row">
+              <input id="search" placeholder="بحث برقم البلاغ، الموقع، العنصر، القسم..." oninput="renderTickets()">
+              <select id="statusFilter" onchange="renderTickets()">
+                <option value="">كل الحالات</option>
+                <option>مفتوح</option>
+                <option>تحت الإجراء</option>
+                <option>تم إجراء مؤقت</option>
+                <option>انتظار قطع غيار</option>
+                <option>انتظار مورد</option>
+                <option>مؤجل بموافقة الإدارة</option>
+                <option>مغلق</option>
+              </select>
+            </div>
+
+            <div class="tablewrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>رقم البلاغ</th>
+                    <th>الفندق</th>
+                    <th>الموقع</th>
+                    <th>العنصر</th>
+                    <th>المشكلة</th>
+                    <th>القسم</th>
+                    <th>التخصص</th>
+                    <th>الخطورة</th>
+                    <th>الحالة</th>
+                    <th>إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+const hotels = [
+  'فندق ديار السلام','فندق ديار التقوى','فندق ديار واحة النزيل','فندق ديار المدينة',
+  'فندق ديار السلام الفضي','فندق ديار الهدى','فندق ديار النخيل','فندق ديار طيبة',
+  'فندق ديار الحبيب','فندق فرج المدينة','فندق بلانتي','فندق بلانتي 2','فندق كاسيل'
+];
+
+const inspectionData = {
+  room: {
+    label:'فحص الغرف',
+    items:{
+      'باب الغرفة والقفل':['كسر في الباب','تشقق في الخشب','القفل لا يعمل','المقبض لا يعمل','الباب لا يغلق جيدًا'],
+      'الجدران / التشققات / الرطوبة':['تشققات','رطوبة','آثار تسريب','تقشر دهان','تلف في الجدار'],
+      'السقف':['تشقق','رطوبة','آثار تسريب','سقوط دهان','تلف في الجبس'],
+      'الأرضيات / السجاد / الموكيت':['حرق في الموكيت','تمزق','اتساخ شديد','ارتفاع يسبب تعثر','تلف في الأرضية'],
+      'التكييف':['لا يعمل','تبريد ضعيف','صوت مزعج','تسريب ماء','يحتاج تنظيف'],
+      'التلفزيون / الشاشة':['لا تعمل','كسر في الشاشة','تحتاج برمجة','الريموت لا يعمل','ضعف إشارة أو قنوات'],
+      'الكهرباء والأفياش':['فيش لا يعمل','التماس','كسر في الغطاء','أسلاك مكشوفة','سخونة أو رائحة احتراق'],
+      'الإنارة':['لا تعمل','ترمش','ضعيفة','مفتاح لا يعمل','غطاء مكسور'],
+      'دورة المياه':['تسريب ماء','لا توجد لوحة ترشيد مياه','روائح كريهة','أرضية زلقة','إكسسوارات ناقصة'],
+      'السباكة / المغسلة / المرحاض':['كسر أو شرخ في المغسلة','كسر أو شرخ في المرحاض','انسداد','ضعف ضغط الماء','السيفون لا يعمل','تهريب من الشطاف أو الخلاط'],
+      'شفاط الحمام':['لا يعمل','ضعيف','صوت مزعج','يحتاج تنظيف'],
+      'الأثاث':['كسر','تقطيع','اهتزاز','تلف قماش أو جلد','حواف حادة'],
+      'النظافة العامة':['اتساخ الغرفة','رائحة كريهة','حشرات','نقص مستلزمات','نظافة دورة المياه غير جيدة'],
+      'السلامة العامة داخل الغرفة':['الشباك يفتح أكثر من الحد المسموح','خطر سقوط','عوائق في الحركة','حواف حادة','خطر كهربائي'],
+      'كاشف الدخان':['غير موجود','لا يعمل','مغطى','متسخ','يحتاج اختبار'],
+      'مرشات الحريق داخل الغرفة':['محجوب','عليه دهان أو غبار','مكسور','يوجد تسريب','يحتاج فحص فني'],
+      'إنارة الطوارئ':['لا تعمل','ضعيفة','مكسورة','غير موجودة']
+    }
+  },
+  floor: {
+    label:'فحص الدور / الممر',
+    items:{
+      'صندوق طفايات الحريق':['محجوب','الزجاج مكسور','الباب لا يفتح','التعليمات غير واضحة'],
+      'طفايات الحريق':['غير موجودة','غير معلقة','مؤشر الضغط غير أخضر','منتهية','مسمار الأمان غير موجود','محجوبة'],
+      'خرطوم الحريق / الهوزريل':['محجوب','الباب لا يفتح','يوجد تسريب','التعليمات غير واضحة'],
+      'مرشات الحريق في الممر':['محجوبة','عليها دهان أو غبار','مكسورة','يوجد تسريب'],
+      'زر الإنذار اليدوي / نقطة النداء':['محجوب','الزجاج مكسور','غير مثبت','لا توجد لوحة إرشادية','يحتاج اختبار'],
+      'جرس / صافرة الإنذار':['لا يعمل','الصوت ضعيف','مكسور','محجوب','يحتاج اختبار فني'],
+      'إنارة الطوارئ':['لا تعمل','ضعيفة','مكسورة','غير موجودة'],
+      'لوحات مخارج الطوارئ':['غير واضحة','غير مضاءة','محجوبة','الاتجاهات غير صحيحة'],
+      'أبواب مخارج الطوارئ':['لا تفتح بسهولة','مقفلة','محجوبة','ذراع الدفع لا يعمل'],
+      'ممرات الدور':['عوائق','تخزين عشوائي','أثاث يعيق الحركة','خطر تعثر'],
+      'الرخام / الأرضيات':['كسر','تشقق','هبوط أو ارتفاع','انزلاق','حواف حادة'],
+      'نظافة الممر':['مخلفات','روائح','سوائل أو خطر انزلاق']
+    }
+  },
+  elevator: {
+    label:'فحص المصاعد',
+    items:{
+      'نظافة كابينة المصعد':['اتساخ','رائحة كريهة','وجود مخلفات'],
+      'أرضية المصعد':['متضررة','انزلاق','ارتفاع أو تعثر'],
+      'جدران المصعد / المرايا':['خدوش','كسر','تلف','اتساخ'],
+      'إضاءة المصعد':['لا تعمل','ضعيفة','ترمش'],
+      'أبواب المصعد':['صوت مزعج','تتأخر','لا تغلق جيدًا','يوجد احتكاك أو تعليق'],
+      'أزرار المصعد':['لا تعمل','مكسورة','غير واضحة','تحتاج تنظيف'],
+      'شاشة الأدوار / المؤشر':['لا تعمل','أرقام خاطئة','إضاءة ضعيفة'],
+      'جرس الطوارئ':['لا يعمل حسب البلاغ','يحتاج اختبار فني'],
+      'الهاتف / الإنتركم':['لا يعمل حسب البلاغ','يحتاج اختبار فني'],
+      'تهوية المصعد':['ضعيفة','لا تعمل','صوت مزعج'],
+      'توقف المصعد مع مستوى الدور':['فرق بسيط','فرق واضح يسبب تعثر'],
+      'شهادة أو ملصق الفحص الدوري':['منتهي','غير موجود','غير واضح']
+    }
+  },
+  fire: {
+    label:'أنظمة الحريق والإنذار',
+    items:{
+      'لوحة إنذار الحريق الرئيسية':['يوجد Fault','يوجد Disable / Bypass','Zone معطل','الشاشة لا تعمل','اللوحة محجوبة','البطارية بها مشكلة','يحتاج فحص فني'],
+      'طابعة إنذار الحريق':['لا تعمل','لا يوجد ورق','الطباعة غير واضحة','مفصولة','يوجد Fault'],
+      'كاشف الدخان':['غير موجود','مغطى','متسخ','مفصول / معطل','لا يعمل','يحتاج اختبار'],
+      'كاشف الحرارة / كاشف الحريق':['غير موجود','لا يعمل','متسخ','مغطى','يحتاج اختبار'],
+      'مرشات الحريق':['غير موجود','محجوب','عليه دهان أو غبار','مكسور','يوجد تسريب','يحتاج فحص فني'],
+      'زر الإنذار اليدوي / نقطة النداء':['محجوب','الزجاج مكسور','غير مثبت','لا توجد لوحة إرشادية','يحتاج اختبار'],
+      'جرس / صافرة الإنذار':['لا يعمل','الصوت ضعيف','مكسور','محجوب','يحتاج اختبار فني']
+    }
+  },
+  cctv: {
+    label:'الكاميرات CCTV',
+    items:{
+      'شاشات المراقبة':['لا تعمل','الصورة غير واضحة','يوجد انقطاع','يوجد تشويش','بعض القنوات لا تظهر','الشاشة مكسورة'],
+      'كاميرات الفندق':['لا تعمل','الصورة ضعيفة','العدسة متسخة','زاوية التصوير غير مناسبة','التصوير الليلي ضعيف','الكاميرا محجوبة','الكاميرا مكسورة']
+    }
+  },
+  admin: {
+    label:'لوحة الأدمن',
+    items:{
+      'إدارة المستخدمين':['إنشاء مستخدم','حظر مستخدم','ترقية مستخدم','تخفيض صلاحية','ربط مستخدم بفندق'],
+      'إدارة النظام':['إضافة فندق','إدارة عناصر الفحص','إدارة قواعد التوزيع','إدارة درجات الخطورة','سجل تغييرات']
+    }
+  }
+};
+
+let currentUser = null;
+let currentType = 'room';
+let tickets = JSON.parse(localStorage.getItem('dyarTickets') || '[]');
+
+function init(){
+  const hotelSelect = document.getElementById('hotel');
+  hotelSelect.innerHTML = hotels.map(h=>`<option>${h}</option>`).join('');
+  loadItems();
+  renderTickets();
+}
+function login(){
+  currentUser = {
+    email:document.getElementById('email').value.trim(),
+    role:document.getElementById('role').value,
+    hotel:document.getElementById('hotel').value
+  };
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('userInfo').textContent = `${currentUser.email} - ${roleName(currentUser.role)} - ${currentUser.hotel}`;
+  renderTickets();
+}
+function logout(){ currentUser=null; location.reload(); }
+function roleName(role){
+  return {admin:'أدمن رئيسي',manager:'مدير',viewer:'إداري مشاهدة فقط',supervisor:'مشرف',assistant:'مساعد مشرف',inspector:'مفتش'}[role] || role;
+}
+function setInspectionType(type, btn){
+  currentType = type;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('inspectionTypeLabel').value = inspectionData[type].label;
+  loadItems();
+}
+function loadItems(){
+  const data = inspectionData[currentType].items;
+  const item = document.getElementById('item');
+  item.innerHTML = Object.keys(data).map(x=>`<option>${x}</option>`).join('');
+  loadProblems();
+}
+document.getElementById('item').addEventListener('change', loadProblems);
+function loadProblems(){
+  const selected = document.getElementById('item').value;
+  const problems = inspectionData[currentType].items[selected] || [];
+  document.getElementById('problem').innerHTML = problems.map(x=>`<option>${x}</option>`).join('');
+}
+function autoAssign(item, problem){
+  const text = `${item} ${problem}`;
+  let department='الصيانة', specialty='عام', risk='متوسط';
+
+  if(/اتساخ|رائحة|حشرات|نظافة|مخلفات|مستلزمات/.test(text)){department='الهاوسكيبنق'; specialty='نظافة'; risk='متوسط';}
+  if(/رطوبة|دهان|تشقق|جبس|سقف|جدار/.test(text)){department='الصيانة'; specialty='بوية / جبس / أسقف';}
+  if(/باب|قفل|مقبض|خشب/.test(text)){department='الصيانة'; specialty='نجارة / أبواب';}
+  if(/تسريب|مغسلة|مرحاض|سباكة|سيفون|شطاف|خلاط|ضغط الماء/.test(text)){department='الصيانة'; specialty='سباكة'; risk='عالي';}
+  if(/كهرباء|فيش|التماس|أسلاك|احتراق|إنارة|مفتاح/.test(text)){department='الصيانة'; specialty='كهرباء'; risk=/التماس|أسلاك|احتراق/.test(text)?'عاجل':'متوسط';}
+  if(/تكييف|تبريد/.test(text)){department='الصيانة'; specialty='تكييف';}
+  if(/شاشة|تلفزيون|كاميرا|مراقبة|قنوات|إشارة/.test(text)){department='IT / الصيانة'; specialty='كاميرات / شاشات';}
+  if(/كاشف|مرش|إنذار|جرس|صافرة|Fault|Bypass|Zone|طابعة|لوحة إنذار/.test(text)){department='الصيانة'; specialty='أنظمة سلامة / إنذار حريق'; risk='عالي';}
+  if(/طفاية|مخرج|هروب|محجوب|تخزين عشوائي|مسارات/.test(text)){department='السلامة HSE'; specialty='معدات إطفاء / مسارات هروب'; risk='عالي';}
+  if(/مصعد|أبواب المصعد|إنتركم|جرس الطوارئ|فرق واضح/.test(text)){department='الصيانة'; specialty='مصاعد'; risk=/فرق واضح|لا يعمل|تعليق/.test(text)?'عاجل':'عالي';}
+
+  return {department, specialty, risk};
+}
+function createTicket(){
+  if(!currentUser){alert('سجل الدخول أولاً');return;}
+  const item = document.getElementById('item').value;
+  const problem = document.getElementById('problem').value;
+  const location = document.getElementById('location').value.trim();
+  if(!location){alert('اكتب الموقع أولاً');return;}
+  const auto = autoAssign(item, problem);
+  const ticket = {
+    id:`DYAR-${new Date().getFullYear()}-${String(tickets.length+1).padStart(4,'0')}`,
+    hotel:currentUser.hotel,
+    type:inspectionData[currentType].label,
+    location,
+    item,
+    problem,
+    department:auto.department,
+    specialty:auto.specialty,
+    risk:auto.risk,
+    status:'مفتوح',
+    note:document.getElementById('note').value.trim(),
+    photoBefore:document.getElementById('photoBefore').value.trim(),
+    createdBy:currentUser.email,
+    createdAt:new Date().toLocaleString('ar-SA')
+  };
+  tickets.unshift(ticket);
+  save();
+  clearForm();
+  renderTickets();
+}
+function save(){localStorage.setItem('dyarTickets', JSON.stringify(tickets));}
+function clearForm(){
+  document.getElementById('location').value='';
+  document.getElementById('note').value='';
+  document.getElementById('photoBefore').value='';
+}
+function riskClass(risk){
+  return risk==='عاجل'?'urgent':risk==='عالي'?'high':risk==='متوسط'?'mid':'low';
+}
+function renderTickets(){
+  const q = (document.getElementById('search')?.value || '').toLowerCase();
+  const status = document.getElementById('statusFilter')?.value || '';
+  let filtered = tickets.filter(t=>{
+    const txt = Object.values(t).join(' ').toLowerCase();
+    return (!q || txt.includes(q)) && (!status || t.status===status);
+  });
+  document.getElementById('ticketsBody').innerHTML = filtered.map(t=>`
+    <tr>
+      <td><b>${t.id}</b><br><span class="muted">${t.createdAt}</span></td>
+      <td>${t.hotel}</td>
+      <td>${t.location}<br><span class="muted">${t.type}</span></td>
+      <td>${t.item}</td>
+      <td>${t.problem}</td>
+      <td>${t.department}</td>
+      <td>${t.specialty}</td>
+      <td><span class="pill ${riskClass(t.risk)}">${t.risk}</span></td>
+      <td>
+        <select onchange="updateStatus('${t.id}', this.value)">
+          ${['مفتوح','تحت الإجراء','تم إجراء مؤقت','انتظار قطع غيار','انتظار مورد','مؤجل بموافقة الإدارة','مغلق','مرفوض / غير صحيح'].map(s=>`<option ${s===t.status?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><button class="danger" onclick="deleteTicket('${t.id}')">حذف</button></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('totalTickets').textContent = tickets.length;
+  document.getElementById('urgentTickets').textContent = tickets.filter(t=>t.risk==='عاجل').length;
+  document.getElementById('openTickets').textContent = tickets.filter(t=>t.status!=='مغلق').length;
+  const closed = tickets.filter(t=>t.status==='مغلق').length;
+  const ready = tickets.length ? Math.round((closed/tickets.length)*100) : 100;
+  document.getElementById('readiness').textContent = `${ready}%`;
+}
+function updateStatus(id, status){
+  const t = tickets.find(x=>x.id===id);
+  if(t){t.status=status; save(); renderTickets();}
+}
+function deleteTicket(id){
+  if(confirm('حذف البلاغ؟')){
+    tickets = tickets.filter(t=>t.id!==id);
+    save();
+    renderTickets();
+  }
+}
+init();
+</script>
+</body>
+</html>
